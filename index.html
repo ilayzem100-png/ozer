@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -29,22 +30,22 @@
        display:flex;flex-direction:column;overflow:hidden;border:0.5px solid var(--border);position:relative}
   @media(min-width:440px){#app{border-radius:14px;height:min(860px,95dvh)}}
   @media(display-mode:standalone){#app{max-height:none;border:none;border-radius:0}}
-
+ 
   .topbar{background:var(--navy);padding:12px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;
           padding-top:max(12px,env(safe-area-inset-top))}
   .topbar .title{flex:1;text-align:center;font-size:16px;font-weight:500;color:#E6F1FB}
   .topbar button{background:none;border:none;padding:2px;cursor:pointer;color:var(--navy-ink);display:flex}
-
+ 
   .today{background:var(--navy-bg);border-bottom:0.5px solid var(--border);padding:10px 14px;
          display:flex;align-items:center;gap:9px;flex-shrink:0}
   .today .label{font-size:11px;color:var(--navy-mid)}
   .today .main{font-size:15px;font-weight:500;color:var(--navy-dark)}
   .today .note{font-size:12px;color:var(--navy-mid)}
   .today.empty .main{color:var(--navy-mid);font-weight:400;font-size:13px}
-
+ 
   .scroll{flex:1;overflow-y:auto;padding:12px 14px 6px;-webkit-overflow-scrolling:touch}
   .daysep{text-align:center;font-size:11px;color:var(--text-3);margin-bottom:12px}
-
+ 
   .bubble{border-radius:12px;padding:11px 12px;max-width:84%;width:fit-content}
   .bubble p{font-size:13px;line-height:1.65;white-space:pre-wrap}
   .me{background:var(--navy-bg);margin-right:auto}
@@ -52,7 +53,7 @@
   .bot{background:var(--bubble)}
   .time{font-size:11px;color:var(--text-3);margin:4px 2px 12px}
   .time.left{text-align:left}
-
+ 
   .card{border-radius:12px;padding:11px 12px;max-width:90%;background:var(--bubble)}
   .card.warn{background:var(--amber-bg)}
   .card.danger{background:var(--red-bg)}
@@ -67,7 +68,7 @@
   .btn.d{border-color:var(--red-line);color:var(--red-ink)}
   .btn.g{border-color:var(--green-line);color:var(--green);background:var(--green-bg)}
   .btn:active{background:rgba(0,0,0,.05)}
-
+ 
   .sec{font-size:11px;color:var(--text-3);margin:16px 0 2px}
   .sec:first-child{margin-top:0}
   .row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:0.5px solid var(--border);text-align:right}
@@ -91,28 +92,28 @@
   .strike{text-decoration:line-through;color:var(--text-2)}
   .empty{text-align:center;color:var(--text-3);font-size:13px;padding:34px 14px;line-height:1.9}
   .empty b{color:var(--navy-mid);font-weight:400;cursor:pointer}
-
+ 
   .stat{display:flex;gap:8px;margin-bottom:12px}
   .stat div{flex:1;background:var(--bubble);border-radius:10px;padding:10px;text-align:center}
   .stat .n{font-size:20px;font-weight:500}
   .stat .l{font-size:11px;color:var(--text-2);margin-top:1px}
   .bar{height:6px;border-radius:3px;background:var(--fill);overflow:hidden;margin-top:5px}
   .bar i{display:block;height:100%;background:var(--navy-mid)}
-
+ 
   .composer{border-top:0.5px solid var(--border);padding:8px 12px;display:flex;align-items:center;gap:9px;flex-shrink:0}
   .composer input{flex:1;font-size:16px;font-family:inherit;color:var(--text);border:0.5px solid var(--border);
                   border-radius:18px;padding:9px 14px;outline:none;background:var(--surface)}
   .composer input:focus{border-color:var(--navy-mid)}
   .send{width:36px;height:36px;border-radius:50%;background:var(--navy);border:none;flex-shrink:0;
         display:flex;align-items:center;justify-content:center;cursor:pointer;color:#E6F1FB}
-
+ 
   .nav{border-top:0.5px solid var(--border);padding:7px 12px;display:flex;justify-content:space-around;flex-shrink:0;
        padding-bottom:max(7px,env(safe-area-inset-bottom))}
   .nav button{background:none;border:none;font-family:inherit;text-align:center;font-size:10px;
               color:var(--text-3);cursor:pointer;padding:2px 10px}
   .nav button svg{display:block;margin:0 auto 2px}
   .nav button.active{color:var(--navy)}
-
+ 
   .sheet{position:absolute;inset:0;background:rgba(0,0,0,.32);display:flex;align-items:flex-end;z-index:10}
   .sheet .inner{background:var(--surface);width:100%;border-radius:16px 16px 0 0;padding:18px 16px 26px;
                 max-height:88%;overflow-y:auto}
@@ -143,7 +144,7 @@
   <div class="nav" id="nav"></div>
   <div class="sheet" id="sheet" style="display:none"><div class="inner" id="sheetInner"></div></div>
 </div>
-
+ 
 <script>
 /* ═══ 8 · PWA manifest, מוזרק בזמן ריצה כדי שהכל יישאר בקובץ אחד ═══ */
 (function(){
@@ -157,15 +158,15 @@
     document.head.appendChild(l);
   }catch(e){}
 })();
-
+ 
 /* ═══ 1 · מודל נתונים ═══ */
-const KEY='ozer-1.0';
+const KEY='ozer-1.2';
 let S={clients:[],meetings:[],tasks:[],quotes:[],msgs:[],seeded:false,dismissed:[]};
 let view='chat', undoStack=[], pending=null;
 const now=()=>new Date(), uid=()=>Math.random().toString(36).slice(2,9);
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const load=()=>{try{const r=localStorage.getItem(KEY);if(r)Object.assign(S,JSON.parse(r))}catch(e){}};
-
+ 
 const DAYS=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
 const MONTHS=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
 const day0=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x};
@@ -186,12 +187,12 @@ function agoLabel(iso){
   if(n<21)return 'לפני '+n+' ימים';
   return 'לפני '+Math.floor(n/7)+' שבועות';
 }
-
+ 
 /* ═══ 2 · פירוק בעברית ═══ */
 const WORDNUM={'אחת':1,'שתיים':2,'שתים':2,'שלוש':3,'ארבע':4,'חמש':5,'שש':6,'שבע':7,
                'שמונה':8,'תשע':9,'עשר':10,'אחת עשרה':11,'שתים עשרה':12,'שתיים עשרה':12};
 const FRAC={'חצי':30,'רבע':15,'עשרה':10,'עשרים':20,'שליש':20};
-
+ 
 function extractTime(t){
   let m=t.match(/(\d{1,2}):(\d{2})/);
   if(m)return{h:+m[1],mi:+m[2],raw:m[0]};
@@ -250,7 +251,7 @@ function clean(s){
           .replace(/[.,־-]+$/,'').trim();
 }
 const norm=s=>String(s||'').replace(/["']/g,'').trim();
-
+ 
 function matchClients(name){
   if(!name)return [];
   const n=norm(name);
@@ -270,7 +271,7 @@ function getClient(name){
 }
 const touch=c=>{if(c&&c.id)c.last=now().toISOString()};
 const clientOf=id=>S.clients.find(c=>c.id===id);
-
+ 
 function splitCommands(text){
   return text.split(/\n+|(?:\s+ו(?=תזיז|תקבע|תרשום|תזכיר|תבטל|שתזיז|שתקבע|שתרשום))|\s+(?:וגם|ואז)\s+/)
              .map(s=>s.trim()).filter(Boolean);
@@ -296,14 +297,14 @@ function summary(t){
   if(ts.length)out.push('משימות:\n'+ts.map(x=>'· '+x.title+(x.clientId?' ('+clientOf(x.clientId).name+')':'')).join('\n'));
   return out.join('\n');
 }
-
+ 
 function runOne(t){
   const time=extractTime(t), dt=extractDate(t);
   let stripped=t;
   if(time)stripped=stripped.replace(time.raw,' ');
   if(dt)stripped=stripped.replace(dt.raw,' ');
   const name=extractName(stripped), date=dt?dt.d:null;
-
+ 
   /* סגירת משימה */
   if(/^(סיימתי|בוצע|עשיתי|סגרתי|גמרתי)/.test(t)){
     const open=S.tasks.filter(x=>x.status==='open');
@@ -315,7 +316,7 @@ function runOne(t){
     pushUndo('סימון "'+hit.title+'" כבוצע',()=>{hit.status='open';delete hit.closedAt});
     return '"'+hit.title+'" סומנה כבוצעה.';
   }
-
+ 
   /* הזזה */
   if(/תזיז|להזיז|תדחה|לדחות|תעביר/.test(t)){
     const hits=matchClients(name);
@@ -331,7 +332,7 @@ function runOne(t){
     pushUndo('הזזת הפגישה עם '+c.name,()=>{m.at=old});
     return c.name+' · הוזזה מ־'+whenLabel(old)+' ל־'+whenLabel(m.at)+'.';
   }
-
+ 
   /* ביטול */
   if(/תבטל|לבטל|ביטול/.test(t)){
     const hits=matchClients(name);
@@ -344,7 +345,7 @@ function runOne(t){
     pushUndo('ביטול הפגישה עם '+c.name,()=>{m.status='open';delete m.closedAt});
     return 'הפגישה עם '+c.name+' ('+whenLabel(m.at)+') בוטלה.';
   }
-
+ 
   /* הצעת מחיר */
   if(/הצע(ת|ה)\s*מחיר|הצעה/.test(t)){
     const c=getClient(name);
@@ -361,7 +362,7 @@ function runOne(t){
     pushUndo('הצעת מחיר ל'+c.name,()=>{S.quotes=S.quotes.filter(x=>x.id!==q.id)});
     return 'הצעת מחיר ל'+c.name+(amount?' על '+amount.toLocaleString()+' ₪':'')+' — נרשמה.\nאזכיר בעוד שבוע אם לא יהיה מענה.';
   }
-
+ 
   /* פגישה */
   if(/פגישה|לקבוע|תקבע|נפגש|פגוש/.test(t)){
     if(!name)return 'עם מי הפגישה?';
@@ -377,7 +378,7 @@ function runOne(t){
     pushUndo('הפגישה עם '+c.name,()=>{S.meetings=S.meetings.filter(x=>x.id!==m.id)});
     return c.name+' · '+whenLabel(m.at)+' — נרשמה.';
   }
-
+ 
   /* משימה */
   let c=null;
   if(name){const g=getClient(name); if(g.ambiguous)return ask(g.ambiguous,'לאיזה לקוח לשייך?'); c=g}
@@ -392,7 +393,7 @@ function runOne(t){
   pushUndo('המשימה "'+title+'"',()=>{S.tasks=S.tasks.filter(x=>x.id!==task.id)});
   return 'נרשם: '+title+(c?' · '+c.name:'')+(due?' · '+whenLabel(task.due):' · ללא תאריך');
 }
-
+ 
 /* שאלה כשלא בטוח — לא מנחשים */
 function ask(hits,q){
   pending=(ans)=>{
@@ -403,7 +404,7 @@ function ask(hits,q){
   };
   return q+'\n'+hits.map(c=>'· '+c.name).join('\n');
 }
-
+ 
 /* ═══ 5 · לוגיקת הכרטיסים היזומים ═══ */
 const QUOTE_DAYS=7, FORGOT_DAYS=21;
 const nextMeeting=()=>S.meetings.filter(m=>m.status==='open'&&new Date(m.at)>=now())
@@ -415,12 +416,12 @@ const forgotten=()=>S.clients.filter(c=>!c.archived&&dayDiff(new Date(c.last),no
   &&!S.dismissed.includes(c.id));
 const hoursFor=id=>S.meetings.filter(m=>m.clientId===id&&m.status==='open'&&new Date(m.at)<now())
   .reduce((a,m)=>a+(m.dur||60),0)/60;
-
+ 
 /* ═══ תצוגה ═══ */
 const $=id=>document.getElementById(id);
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const initials=n=>{const p=String(n).trim().split(/\s+/);return (p[0][0]||'?')+(p[1]?p[1][0]:'')};
-
+ 
 function renderToday(){
   const el=$('todayCard'), m=nextMeeting();
   const clock='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0C447C" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
@@ -434,7 +435,7 @@ function renderToday(){
     '<div class="main">'+hhmm(d)+' · '+esc(c?c.name:'')+'</div>'+
     (note?'<div class="note">'+esc(note)+'</div>':'')+'</div>';
 }
-
+ 
 function renderChat(){
   let h='<div class="daysep">היום</div>';
   staleQuotes().forEach(q=>{const c=clientOf(q.clientId); if(!c)return;
@@ -447,11 +448,10 @@ function renderChat(){
       '<div class="s">פעילות אחרונה: '+dm(new Date(c.last))+'</div>'+
       '<div class="btns"><button class="btn d" data-act="wa" data-id="'+c.id+'">הודעה</button>'+
       '<button class="btn d" data-act="farch" data-id="'+c.id+'">לארכיון</button></div></div><div class="time">09:02</div>';});
-  if(!S.msgs.length)h+='<div class="empty">כתוב לי מה צריך:<br>'+
-    '<b data-ex="תקבע פגישה עם אבי גורי ביום חמישי בשעה חמש וחצי">תקבע פגישה עם אבי גורי ביום חמישי בשעה חמש וחצי</b><br>'+
-    '<b data-ex="תזכיר לי לשלוח חוזה לליז כהן מחר">תזכיר לי לשלוח חוזה לליז כהן מחר</b><br>'+
-    '<b data-ex="שלחתי הצעת מחיר לרועי כהן על 12000">שלחתי הצעת מחיר לרועי כהן על 12000</b><br>'+
-    '<b data-ex="מה יש לי היום">מה יש לי היום</b></div>';
+  if(!S.msgs.length)h+='<div class="empty">'+
+    '<div style="font-size:16px;color:var(--text);margin-bottom:8px">שלום, אני בוטי</div>'+
+    '<div style="font-size:14px;color:var(--text-2);line-height:1.8">העוזר האישי שלך.<br>'+
+    'כתוב לי את המשימות והפגישות שלך ואני אנהל לך אותן.</div></div>';
   S.msgs.forEach((m,i)=>{
     const showUndo=m.who==='bot'&&i===S.msgs.length-1&&undoStack.length;
     h+='<div class="bubble '+(m.who==='me'?'me':'bot')+'"><p>'+esc(m.text)+'</p>'+
@@ -459,7 +459,7 @@ function renderChat(){
       '<div class="time'+(m.who==='me'?' left':'')+'">'+m.t+(m.who==='me'?' ✓✓':'')+'</div>';});
   const s=$('scroll'); s.innerHTML=h; s.scrollTop=s.scrollHeight;
 }
-
+ 
 /* ═══ 3 · לקוחות ═══ */
 function urgency(c){
   if(c.archived)return 5;
@@ -488,7 +488,9 @@ function clientRow(c,calm){
     '<div class="avatar '+av+'">'+esc(initials(c.name))+'</div></div>';
 }
 function renderClients(){
-  if(!S.clients.length){$('scroll').innerHTML='<div class="empty">אין עדיין לקוחות.<br>כל פגישה או משימה שתרשום תיצור אחד.</div>';return}
+  if(!S.clients.length){$('scroll').innerHTML='<div class="empty">'+
+    '<div style="font-size:15px;color:var(--text-2)">לא נמצאו לקוחות</div>'+
+    '<div style="font-size:13px;color:var(--text-3);margin-top:4px">קבע פגישות והעמוד יתמלא</div></div>';return}
   const act=S.clients.filter(c=>urgency(c)<4).sort((a,b)=>urgency(a)-urgency(b));
   const calm=S.clients.filter(c=>urgency(c)>=4);
   let h='';
@@ -496,7 +498,7 @@ function renderClients(){
   if(calm.length)h+='<div class="sec">רגוע</div>'+calm.map(c=>clientRow(c,true)).join('');
   $('scroll').innerHTML=h;
 }
-
+ 
 /* ═══ 4 · משימות ═══ */
 function taskRow(t,cls){
   const c=t.clientId?clientOf(t.clientId):null, d=t.status==='done';
@@ -507,7 +509,9 @@ function taskRow(t,cls){
     '<div class="sub '+(cls||'')+'">'+(c?esc(c.name):'ללא לקוח')+(t.due?' · '+whenLabel(t.due):'')+'</div></div></div>';
 }
 function renderTasks(){
-  if(!S.tasks.length){$('scroll').innerHTML='<div class="empty">אין משימות.<br><b data-ex="תזכיר לי לשלוח חוזה לליז כהן מחר">תזכיר לי לשלוח חוזה לליז כהן מחר</b></div>';return}
+  if(!S.tasks.length){$('scroll').innerHTML='<div class="empty">'+
+    '<div style="font-size:15px;color:var(--text-2)">לא נמצאו משימות</div>'+
+    '<div style="font-size:13px;color:var(--text-3);margin-top:4px">כתוב לי בצ\'אט והעמוד יתמלא</div></div>';return}
   const g={late:[],today:[],week:[],none:[]};
   S.tasks.filter(t=>t.status==='open').forEach(t=>{
     if(!t.due)return g.none.push(t);
@@ -518,11 +522,11 @@ function renderTasks(){
   $('scroll').innerHTML=blk('באיחור',g.late,'danger')+blk('היום',g.today)+blk('השבוע',g.week)+
     blk('ללא תאריך',g.none)+(done.length?'<div class="sec">נסגר</div>'+done.map(t=>taskRow(t)).join(''):'');
 }
-
+ 
 /* ═══ גיליונות ═══ */
 const openSheet=h=>{$('sheetInner').innerHTML=h;$('sheet').style.display='flex'};
 const closeSheet=()=>{$('sheet').style.display='none'};
-
+ 
 function sheetClient(id){
   const c=clientOf(id); if(!c)return;
   const ms=S.meetings.filter(m=>m.clientId===id).sort((a,b)=>new Date(b.at)-new Date(a.at));
@@ -546,7 +550,7 @@ function sheetClient(id){
      '<button class="btn" data-act="close">סגור</button></div>';
   openSheet(h);
 }
-
+ 
 /* ═══ 7 · הודעה ללקוח ═══ */
 function drafts(c){
   const q=S.quotes.find(q=>q.clientId===c.id&&q.status==='open');
@@ -574,7 +578,7 @@ function sheetWhatsapp(id){
     '<div class="btns" style="margin-top:14px"><button class="btn" data-act="close">סגור</button></div>';
   openSheet(h);
 }
-
+ 
 /* ═══ 6 · סיכום חודשי ═══ */
 function sheetReport(){
   const rows=S.clients.map(c=>({c,h:hoursFor(c.id)})).filter(r=>r.h>0).sort((a,b)=>b.h-a.h);
@@ -601,7 +605,7 @@ function sheetReport(){
      '<button class="btn" data-act="close">סגור</button></div>';
   openSheet(h);
 }
-
+ 
 /* ═══ תפריט ═══ */
 function sheetMenu(){
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -611,8 +615,6 @@ function sheetMenu(){
     '<span>להוסיף למסך הבית: '+(ios?'כפתור השיתוף בסאפרי ← "הוסף למסך הבית"':'תפריט הדפדפן ← "הוסף למסך הבית"')+'</span></div>';
   h+='<div class="row tap" data-act="report"><div class="grow"><div class="name">סיכום החודש</div>'+
     '<div class="sub">שעות, מה נפל, הצעות תקועות</div></div></div>'+
-    '<div class="row tap" data-act="demo"><div class="grow"><div class="name">טען נתוני דמו</div>'+
-    '<div class="sub">5 לקוחות במצבים שונים</div></div></div>'+
     '<div class="row tap" data-act="export"><div class="grow"><div class="name">ייצוא נתונים</div>'+
     '<div class="sub">קובץ גיבוי</div></div></div>'+
     '<div class="row tap" data-act="wipe"><div class="grow"><div class="name" style="color:var(--red-ink)">מחק הכל</div>'+
@@ -620,7 +622,7 @@ function sheetMenu(){
     '<div class="btns" style="margin-top:16px"><button class="btn" data-act="close">סגור</button></div>';
   openSheet(h);
 }
-
+ 
 /* ═══ ניווט ═══ */
 const NAV=[
   {k:'tasks',label:'משימות',icon:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12l3 3 5-6"/>'},
@@ -635,7 +637,7 @@ function render(){
   if(view==='chat')renderChat(); else if(view==='clients')renderClients(); else renderTasks();
   save();
 }
-
+ 
 /* ═══ אירועים ═══ */
 function sendMsg(){
   const v=$('input').value.trim(); if(!v)return;
@@ -648,13 +650,13 @@ $('input').onkeydown=e=>{if(e.key==='Enter')sendMsg()};
 $('menu').onclick=sheetMenu;
 $('nav').onclick=e=>{const b=e.target.closest('button[data-view]');if(b){view=b.dataset.view;render()}};
 $('sheet').onclick=e=>{if(e.target.id==='sheet')closeSheet()};
-
+ 
 document.body.addEventListener('click',e=>{
   const ex=e.target.closest('[data-ex]');
   if(ex){$('input').value=ex.dataset.ex;$('input').focus();return}
   const el=e.target.closest('[data-act]'); if(!el)return;
   const id=el.dataset.id, act=el.dataset.act;
-
+ 
   if(act==='client'){sheetClient(id);return}
   if(act==='wa'){closeSheet();sheetWhatsapp(id);return}
   if(act==='report'){sheetReport();return}
@@ -675,7 +677,7 @@ document.body.addEventListener('click',e=>{
     const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
     const a=document.createElement('a'); a.href=URL.createObjectURL(b);
     a.download='ozer-backup.json'; a.click(); return}
-
+ 
   switch(act){
     case 'undo':S.msgs.push({who:'bot',text:undoLast(),t:hhmm(now())});break;
     case 'toggle':{const t=S.tasks.find(t=>t.id===id);t.status=t.status==='done'?'open':'done';
@@ -683,48 +685,12 @@ document.body.addEventListener('click',e=>{
     case 'qlost':{const q=S.quotes.find(q=>q.id===id);q.status='lost';q.closedAt=now().toISOString();break}
     case 'qwon':{const q=S.quotes.find(q=>q.id===id);q.status='won';q.closedAt=now().toISOString();break}
     case 'farch':{clientOf(id).archived=true;S.dismissed.push(id);break}
-    case 'demo':seed(true);break;
     case 'wipe':if(confirm('למחוק הכל?')){S={clients:[],meetings:[],tasks:[],quotes:[],msgs:[],seeded:true,dismissed:[]};undoStack=[]}break;
   }
   closeSheet(); render();
 });
-
-/* ═══ 1 · נתוני דמו — 5 לקוחות במצבים שונים ═══ */
-function seed(force){
-  if(S.seeded&&!force)return;
-  const t=now(), ago=n=>{const d=new Date(t);d.setDate(d.getDate()-n);return d.toISOString()};
-  const C=(name,note,d)=>({id:uid(),name,note:note||'',last:ago(d),archived:false});
-  const avi=C('אבי גרינליף','אתר תדמית',0),      // פגישה היום + פתוחים
-        roi=C('רועי כהן','',9),                   // הצעת מחיר תקועה
-        mic=C('מיכל ברק','',24),                  // נשכח
-        liz=C('ליז כהן','ליווי חודשי',1),         // פגישה מחר
-        dan=C('דני לוי','',2);                    // רגוע
-  S.clients=[avi,roi,mic,liz,dan];
-
-  const at=(days,h,mi)=>{const d=new Date(t);d.setDate(d.getDate()+days);d.setHours(h,mi||0,0,0);return d.toISOString()};
-  const soon=new Date(t); soon.setMinutes(soon.getMinutes()+40,0,0);
-  S.meetings=[
-    {id:uid(),clientId:avi.id,at:soon.toISOString(),status:'open',dur:60},
-    {id:uid(),clientId:liz.id,at:at(1,14),status:'open',dur:60},
-    {id:uid(),clientId:dan.id,at:at(-3,14),status:'open',dur:90},
-    {id:uid(),clientId:roi.id,at:at(-9,10),status:'open',dur:90},
-    {id:uid(),clientId:avi.id,at:at(-6,11),status:'open',dur:120}
-  ];
-  S.tasks=[
-    {id:uid(),clientId:avi.id,title:'בדיקת שרת',due:at(-1,12),status:'open'},
-    {id:uid(),clientId:avi.id,title:'להכין מסמך דרישות',due:at(0,10),status:'open'},
-    {id:uid(),clientId:liz.id,title:'לשלוח חוזה',due:at(4,12),status:'open'},
-    {id:uid(),clientId:mic.id,title:'לתאם שיחת המשך',due:null,status:'open'},
-    {id:uid(),clientId:dan.id,title:'שליחת הצעת מחיר',due:at(0,9),status:'done',closedAt:t.toISOString()}
-  ];
-  S.quotes=[
-    {id:uid(),clientId:roi.id,amount:12000,sentAt:at(-8,10),status:'open'},
-    {id:uid(),clientId:dan.id,amount:8500,sentAt:at(-20,10),status:'won',closedAt:at(-14,10)}
-  ];
-  S.msgs=[]; S.dismissed=[]; undoStack=[]; S.seeded=true;
-}
-
-load(); seed(); render();
+ 
+load(); render();
 </script>
 </body>
 </html>
