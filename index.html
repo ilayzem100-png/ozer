@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0C447C">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="העוזר העסקי">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230C447C'/%3E%3Ccircle cx='90' cy='90' r='46' fill='none' stroke='%23E6F1FB' stroke-width='9'/%3E%3Cpath d='M90 62v30l21 14' fill='none' stroke='%23E6F1FB' stroke-width='9' stroke-linecap='round'/%3E%3C/svg%3E">
+<title>העוזר העסקי</title>
+<style>
+  :root{
+    --navy:#0C447C; --navy-dark:#042C53; --navy-mid:#185FA5;
+    --navy-bg:#E6F1FB; --navy-ink:#B5D4F4;
+    --amber-bg:#FAEEDA; --amber-ink:#854F0B; --amber-line:#E0C48A;
+    --red-bg:#FCEBEB; --red-ink:#A32D2D; --red-line:#E2AFAF;
+    --green:#2F7D46; --green-bg:#E7F3EA; --green-line:#A8CDB4;
+    --surface:#FFFFFF; --page:#EEEEEC; --bubble:#F7F7F5;
+    --border:#E3E3E0; --border-strong:#CFCFCA; --fill:#F0F0EE;
+    --text:#1A1A18; --text-2:#6B6B66; --text-3:#96968F;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overscroll-behavior:none}
+  body{background:var(--page);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Assistant","Rubik",Arial,sans-serif;
+       color:var(--text);display:flex;align-items:center;justify-content:center}
+  #app{width:100%;max-width:400px;height:100dvh;max-height:860px;background:var(--surface);
+       display:flex;flex-direction:column;overflow:hidden;border:0.5px solid var(--border);position:relative}
+  @media(min-width:440px){#app{border-radius:14px;height:min(860px,95dvh)}}
+  @media(display-mode:standalone){#app{max-height:none;border:none;border-radius:0}}
+
+  .topbar{background:var(--navy);padding:12px 14px;display:flex;align-items:center;gap:10px;flex-shrink:0;
+          padding-top:max(12px,env(safe-area-inset-top))}
+  .topbar .title{flex:1;text-align:center;font-size:16px;font-weight:500;color:#E6F1FB}
+  .topbar button{background:none;border:none;padding:2px;cursor:pointer;color:var(--navy-ink);display:flex}
+
+  .today{background:var(--navy-bg);border-bottom:0.5px solid var(--border);padding:10px 14px;
+         display:flex;align-items:center;gap:9px;flex-shrink:0}
+  .today .label{font-size:11px;color:var(--navy-mid)}
+  .today .main{font-size:15px;font-weight:500;color:var(--navy-dark)}
+  .today .note{font-size:12px;color:var(--navy-mid)}
+  .today.empty .main{color:var(--navy-mid);font-weight:400;font-size:13px}
+
+  .scroll{flex:1;overflow-y:auto;padding:12px 14px 6px;-webkit-overflow-scrolling:touch}
+  .daysep{text-align:center;font-size:11px;color:var(--text-3);margin-bottom:12px}
+
+  .bubble{border-radius:12px;padding:11px 12px;max-width:84%;width:fit-content}
+  .bubble p{font-size:13px;line-height:1.65;white-space:pre-wrap}
+  .me{background:var(--navy-bg);margin-right:auto}
+  .me p{color:var(--navy-dark)}
+  .bot{background:var(--bubble)}
+  .time{font-size:11px;color:var(--text-3);margin:4px 2px 12px}
+  .time.left{text-align:left}
+
+  .card{border-radius:12px;padding:11px 12px;max-width:90%;background:var(--bubble)}
+  .card.warn{background:var(--amber-bg)}
+  .card.danger{background:var(--red-bg)}
+  .card .h{font-size:14px;font-weight:500}
+  .card .s{font-size:12px;color:var(--text-2);margin-top:2px}
+  .card.warn .h,.card.warn .s{color:var(--amber-ink)}
+  .card.danger .h,.card.danger .s{color:var(--red-ink)}
+  .btns{display:flex;gap:6px;margin-top:10px}
+  .btn{flex:1;text-align:center;font-size:12px;padding:7px 4px;border:0.5px solid var(--border-strong);
+       border-radius:6px;background:none;font-family:inherit;color:var(--text);cursor:pointer}
+  .btn.w{border-color:var(--amber-line);color:var(--amber-ink)}
+  .btn.d{border-color:var(--red-line);color:var(--red-ink)}
+  .btn.g{border-color:var(--green-line);color:var(--green);background:var(--green-bg)}
+  .btn:active{background:rgba(0,0,0,.05)}
+
+  .sec{font-size:11px;color:var(--text-3);margin:16px 0 2px}
+  .sec:first-child{margin-top:0}
+  .row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:0.5px solid var(--border);text-align:right}
+  .row.tap{cursor:pointer}
+  .grow{flex:1;min-width:0}
+  .name{font-size:15px;font-weight:500}
+  .sub{font-size:12px;color:var(--text-2)}
+  .sub.warn{color:var(--amber-ink)}
+  .sub.danger{color:var(--red-ink)}
+  .muted{opacity:.68}
+  .avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+          font-size:13px;font-weight:500;flex-shrink:0}
+  .av-blue{background:var(--navy-bg);color:var(--navy)}
+  .av-amber{background:var(--amber-bg);color:var(--amber-ink)}
+  .av-red{background:var(--red-bg);color:var(--red-ink)}
+  .av-gray{background:var(--fill);color:var(--text-2)}
+  .badge{font-size:11px;padding:2px 8px;border-radius:9px;background:var(--amber-bg);color:var(--amber-ink);flex-shrink:0}
+  .chk{width:20px;height:20px;border:1.5px solid var(--border-strong);border-radius:5px;flex-shrink:0;
+       background:none;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0}
+  .chk.on{border-color:var(--green);background:var(--green-bg)}
+  .strike{text-decoration:line-through;color:var(--text-2)}
+  .empty{text-align:center;color:var(--text-3);font-size:13px;padding:34px 14px;line-height:1.9}
+  .empty b{color:var(--navy-mid);font-weight:400;cursor:pointer}
+
+  .stat{display:flex;gap:8px;margin-bottom:12px}
+  .stat div{flex:1;background:var(--bubble);border-radius:10px;padding:10px;text-align:center}
+  .stat .n{font-size:20px;font-weight:500}
+  .stat .l{font-size:11px;color:var(--text-2);margin-top:1px}
+  .bar{height:6px;border-radius:3px;background:var(--fill);overflow:hidden;margin-top:5px}
+  .bar i{display:block;height:100%;background:var(--navy-mid)}
+
+  .composer{border-top:0.5px solid var(--border);padding:8px 12px;display:flex;align-items:center;gap:9px;flex-shrink:0}
+  .composer input{flex:1;font-size:16px;font-family:inherit;color:var(--text);border:0.5px solid var(--border);
+                  border-radius:18px;padding:9px 14px;outline:none;background:var(--surface)}
+  .composer input:focus{border-color:var(--navy-mid)}
+  .send{width:36px;height:36px;border-radius:50%;background:var(--navy);border:none;flex-shrink:0;
+        display:flex;align-items:center;justify-content:center;cursor:pointer;color:#E6F1FB}
+
+  .nav{border-top:0.5px solid var(--border);padding:7px 12px;display:flex;justify-content:space-around;flex-shrink:0;
+       padding-bottom:max(7px,env(safe-area-inset-bottom))}
+  .nav button{background:none;border:none;font-family:inherit;text-align:center;font-size:10px;
+              color:var(--text-3);cursor:pointer;padding:2px 10px}
+  .nav button svg{display:block;margin:0 auto 2px}
+  .nav button.active{color:var(--navy)}
+
+  .sheet{position:absolute;inset:0;background:rgba(0,0,0,.32);display:flex;align-items:flex-end;z-index:10}
+  .sheet .inner{background:var(--surface);width:100%;border-radius:16px 16px 0 0;padding:18px 16px 26px;
+                max-height:88%;overflow-y:auto}
+  .sheet h3{font-size:18px;font-weight:500}
+  .sheet .meta{font-size:12px;color:var(--text-2);margin:2px 0 14px}
+  .draft{background:var(--green-bg);border-radius:12px;padding:13px;font-size:13px;line-height:1.7}
+  .hint{background:var(--navy-bg);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--navy-dark);
+        line-height:1.6;margin-bottom:12px;display:flex;gap:8px;align-items:flex-start}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <button id="menu" aria-label="תפריט">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+    <div class="title" id="screenTitle">העוזר העסקי</div>
+    <span style="width:19px"></span>
+  </div>
+  <div class="today" id="todayCard"></div>
+  <div class="scroll" id="scroll"></div>
+  <div class="composer">
+    <input id="input" placeholder="כתוב לבוטי…" autocomplete="off" enterkeyhint="send">
+    <button class="send" id="send" aria-label="שלח">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4L3 11l7 3 3 7z"/></svg>
+    </button>
+  </div>
+  <div class="nav" id="nav"></div>
+  <div class="sheet" id="sheet" style="display:none"><div class="inner" id="sheetInner"></div></div>
+</div>
+
+<script>
+/* ═══ 8 · PWA manifest, מוזרק בזמן ריצה כדי שהכל יישאר בקובץ אחד ═══ */
+(function(){
+  const icon="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%230C447C'/%3E%3Ccircle cx='256' cy='256' r='130' fill='none' stroke='%23E6F1FB' stroke-width='26'/%3E%3Cpath d='M256 176v86l60 40' fill='none' stroke='%23E6F1FB' stroke-width='26' stroke-linecap='round'/%3E%3C/svg%3E";
+  const mf={name:"העוזר העסקי",short_name:"העוזר",lang:"he",dir:"rtl",display:"standalone",
+    orientation:"portrait",background_color:"#FFFFFF",theme_color:"#0C447C",start_url:".",
+    icons:[{src:icon,sizes:"512x512",type:"image/svg+xml",purpose:"any maskable"}]};
+  try{
+    const l=document.createElement('link'); l.rel='manifest';
+    l.href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/manifest+json'}));
+    document.head.appendChild(l);
+  }catch(e){}
+})();
+
+/* ═══ 1 · מודל נתונים ═══ */
+const KEY='ozer-1.0';
+let S={clients:[],meetings:[],tasks:[],quotes:[],msgs:[],seeded:false,dismissed:[]};
+let view='chat', undoStack=[], pending=null;
+const now=()=>new Date(), uid=()=>Math.random().toString(36).slice(2,9);
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const load=()=>{try{const r=localStorage.getItem(KEY);if(r)Object.assign(S,JSON.parse(r))}catch(e){}};
+
+const DAYS=['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+const MONTHS=['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'];
+const day0=d=>{const x=new Date(d);x.setHours(0,0,0,0);return x};
+const dayDiff=(a,b)=>Math.round((day0(b)-day0(a))/864e5);
+const hhmm=d=>String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+const dm=d=>d.getDate()+'.'+(d.getMonth()+1);
+function whenLabel(iso){
+  const d=new Date(iso), n=dayDiff(now(),d);
+  if(n===0)return 'היום '+hhmm(d);
+  if(n===1)return 'מחר '+hhmm(d);
+  if(n===-1)return 'אתמול '+hhmm(d);
+  if(n>1&&n<7)return 'יום '+DAYS[d.getDay()]+' '+hhmm(d);
+  return dm(d)+' בשעה '+hhmm(d);
+}
+function agoLabel(iso){
+  const n=dayDiff(new Date(iso),now());
+  if(n<=0)return 'היום'; if(n===1)return 'אתמול';
+  if(n<21)return 'לפני '+n+' ימים';
+  return 'לפני '+Math.floor(n/7)+' שבועות';
+}
+
+/* ═══ 2 · פירוק בעברית ═══ */
+const WORDNUM={'אחת':1,'שתיים':2,'שתים':2,'שלוש':3,'ארבע':4,'חמש':5,'שש':6,'שבע':7,
+               'שמונה':8,'תשע':9,'עשר':10,'אחת עשרה':11,'שתים עשרה':12,'שתיים עשרה':12};
+const FRAC={'חצי':30,'רבע':15,'עשרה':10,'עשרים':20,'שליש':20};
+
+function extractTime(t){
+  let m=t.match(/(\d{1,2}):(\d{2})/);
+  if(m)return{h:+m[1],mi:+m[2],raw:m[0]};
+  m=t.match(/רבע\s+ל([\u0590-\u05FF]+)/);
+  if(m&&WORDNUM[m[1]]){let h=WORDNUM[m[1]];if(h<8)h+=12;h=(h+23)%24;return{h,mi:45,raw:m[0]}}
+  m=t.match(/(?:בשעה|ב־?)\s*(\d{1,2})\s*ו(חצי|רבע)/);
+  if(m)return{h:+m[1],mi:FRAC[m[2]],raw:m[0]};
+  m=t.match(/בשעה\s*(\d{1,2})(?!\d)/);
+  if(m)return{h:+m[1],mi:0,raw:m[0]};
+  m=t.match(/בשעה\s+([\u0590-\u05FF]+(?:\s+עשרה)?)(?:\s+ו(חצי|רבע))?/);
+  if(m&&WORDNUM[m[1]]){let h=WORDNUM[m[1]];if(h<8)h+=12;return{h,mi:m[2]?FRAC[m[2]]:0,raw:m[0]}}
+  return null;
+}
+function extractDate(t){
+  let m=t.match(/(\d{1,2})[.\/](\d{1,2})(?:[.\/](\d{2,4}))?/);
+  if(m&&+m[2]<=12){
+    const y=m[3]?(+m[3]<100?2000+ +m[3]:+m[3]):now().getFullYear();
+    const d=new Date(y,+m[2]-1,+m[1]);
+    if(!m[3]&&d<day0(now()))d.setFullYear(y+1);
+    if(!isNaN(d))return{d,raw:m[0]};
+  }
+  if(/מחרתיים/.test(t)){const d=day0(now());d.setDate(d.getDate()+2);return{d,raw:'מחרתיים'}}
+  if(/\bמחר\b/.test(t)){const d=day0(now());d.setDate(d.getDate()+1);return{d,raw:'מחר'}}
+  if(/\bהיום\b/.test(t))return{d:day0(now()),raw:'היום'};
+  m=t.match(/(?:ביום|יום)\s+(ראשון|שני|שלישי|רביעי|חמישי|שישי|שבת)/);
+  if(m){const target=DAYS.indexOf(m[1]),d=day0(now());
+    let add=(target-d.getDay()+7)%7; if(add===0)add=7; d.setDate(d.getDate()+add); return{d,raw:m[0]}}
+  m=t.match(/בעוד\s+(\d+|שבועיים|יומיים|חודשיים)\s*(ימים|יום|שבועות|שבוע|חודש|חודשים)?/);
+  if(m){const d=day0(now());
+    if(m[1]==='שבועיים')d.setDate(d.getDate()+14);
+    else if(m[1]==='יומיים')d.setDate(d.getDate()+2);
+    else if(m[1]==='חודשיים')d.setMonth(d.getMonth()+2);
+    else{const n=+m[1];
+      if(/חודש/.test(m[2]||''))d.setMonth(d.getMonth()+n);
+      else d.setDate(d.getDate()+n*(/שבוע/.test(m[2]||'')?7:1))}
+    return{d,raw:m[0]}}
+  if(/שבוע הבא/.test(t)){const d=day0(now());d.setDate(d.getDate()+7);return{d,raw:'שבוע הבא'}}
+  if(/סוף השבוע/.test(t)){const d=day0(now());d.setDate(d.getDate()+((4-d.getDay()+7)%7||7));return{d,raw:'סוף השבוע'}}
+  return null;
+}
+const VERBS=/^(שלוח|קבוע|הזיז|בטל|חזור|עשות|הכין|תאם|דבר|בדוק|סגור|כתוב|התקשר|סיים|הוציא|הזמין)/;
+function extractName(t){
+  let m=t.match(/עם\s+([\u0590-\u05FF][\u0590-\u05FF'"\-]*(?:\s+[\u0590-\u05FF][\u0590-\u05FF'"\-]*)?)/);
+  if(m)return clean(m[1]);
+  m=t.match(/(?:את|של)\s+([\u0590-\u05FF][\u0590-\u05FF'"\-]{1,}\s+[\u0590-\u05FF][\u0590-\u05FF'"\-]{1,})/);
+  if(m)return clean(m[1]);
+  m=t.match(/(?:^|\s)ל([\u0590-\u05FF][\u0590-\u05FF'"\-]{2,})(?:\s+([\u0590-\u05FF][\u0590-\u05FF'"\-]{2,}))?(?=\s|$)/);
+  if(m&&!VERBS.test(m[1])){
+    const two=m[2]&&!VERBS.test(m[2])&&!/^(על|את|עם|ב|מ|ה|כדי|בקשר)$/.test(m[2]);
+    return clean(m[1]+(two?' '+m[2]:''));
+  }
+  return null;
+}
+function clean(s){
+  return s.replace(/\b(בשעה|בתאריך|מחר|היום|מחרתיים|בעוד|ביום|שבוע|הבא|על|את|עם)\b.*$/,'')
+          .replace(/[.,־-]+$/,'').trim();
+}
+const norm=s=>String(s||'').replace(/["']/g,'').trim();
+
+function matchClients(name){
+  if(!name)return [];
+  const n=norm(name);
+  const exact=S.clients.filter(c=>norm(c.name)===n);
+  if(exact.length)return exact;
+  return S.clients.filter(c=>{
+    const cn=norm(c.name);
+    return cn.startsWith(n)||cn.split(' ').includes(n)||(n.length>2&&cn.includes(n));
+  });
+}
+function getClient(name){
+  const hits=matchClients(name);
+  if(hits.length===1)return hits[0];
+  if(hits.length>1)return {ambiguous:hits};
+  const c={id:uid(),name:norm(name),note:'',last:now().toISOString(),archived:false};
+  S.clients.push(c); return c;
+}
+const touch=c=>{if(c&&c.id)c.last=now().toISOString()};
+const clientOf=id=>S.clients.find(c=>c.id===id);
+
+function splitCommands(text){
+  return text.split(/\n+|(?:\s+ו(?=תזיז|תקבע|תרשום|תזכיר|תבטל|שתזיז|שתקבע|שתרשום))|\s+(?:וגם|ואז)\s+/)
+             .map(s=>s.trim()).filter(Boolean);
+}
+function respond(text){
+  const t=text.trim();
+  if(pending){const r=pending(t);if(r!==null)return r}
+  if(/^(לא נכון|טעות|תבטל את זה|בטל את זה|תתקן|לא זה)$/.test(t))return undoLast();
+  if(/^(מה יש לי|מה היום|מה מחר|מה פתוח|מה נשאר|מה יש)/.test(t))return summary(t);
+  return splitCommands(t).map(runOne).join('\n');
+}
+function pushUndo(label,fn){undoStack.push({label,undo:fn});if(undoStack.length>12)undoStack.shift()}
+function undoLast(){
+  const a=undoStack.pop(); if(!a)return 'אין מה לבטל.';
+  a.undo(); return 'ביטלתי: '+a.label+'.';
+}
+function summary(t){
+  const target=/מחר/.test(t)?1:0;
+  const ms=S.meetings.filter(m=>m.status==='open'&&dayDiff(now(),new Date(m.at))===target)
+    .sort((a,b)=>new Date(a.at)-new Date(b.at));
+  const ts=S.tasks.filter(x=>x.status==='open'&&x.due&&dayDiff(now(),new Date(x.due))<=target);
+  const out=[ms.length?ms.map(m=>'· '+hhmm(new Date(m.at))+' '+clientOf(m.clientId).name).join('\n'):'אין פגישות.'];
+  if(ts.length)out.push('משימות:\n'+ts.map(x=>'· '+x.title+(x.clientId?' ('+clientOf(x.clientId).name+')':'')).join('\n'));
+  return out.join('\n');
+}
+
+function runOne(t){
+  const time=extractTime(t), dt=extractDate(t);
+  let stripped=t;
+  if(time)stripped=stripped.replace(time.raw,' ');
+  if(dt)stripped=stripped.replace(dt.raw,' ');
+  const name=extractName(stripped), date=dt?dt.d:null;
+
+  /* סגירת משימה */
+  if(/^(סיימתי|בוצע|עשיתי|סגרתי|גמרתי)/.test(t)){
+    const open=S.tasks.filter(x=>x.status==='open');
+    if(!open.length)return 'אין משימות פתוחות.';
+    const key=t.replace(/^(סיימתי|בוצע|עשיתי|סגרתי|גמרתי)\s*(את\s*)?/,'').trim();
+    const hit=open.find(x=>key&&x.title.includes(key.replace(/^ה/,'')))||
+              open.find(x=>name&&x.clientId&&clientOf(x.clientId)&&norm(clientOf(x.clientId).name).includes(norm(name)))||open[0];
+    hit.status='done'; hit.closedAt=now().toISOString();
+    pushUndo('סימון "'+hit.title+'" כבוצע',()=>{hit.status='open';delete hit.closedAt});
+    return '"'+hit.title+'" סומנה כבוצעה.';
+  }
+
+  /* הזזה */
+  if(/תזיז|להזיז|תדחה|לדחות|תעביר/.test(t)){
+    const hits=matchClients(name);
+    if(!hits.length)return name?('אין לי לקוח בשם '+name+'.'):'את הפגישה של מי להזיז?';
+    if(hits.length>1)return ask(hits,'למי מהם?');
+    const c=hits[0];
+    const m=S.meetings.filter(m=>m.clientId===c.id&&m.status==='open').sort((a,b)=>new Date(a.at)-new Date(b.at))[0];
+    if(!m)return 'אין פגישה פתוחה עם '+c.name+'.';
+    if(!date&&!time)return 'לאיזה תאריך ושעה להזיז את הפגישה עם '+c.name+'?';
+    const old=m.at, o=new Date(old), d=date?new Date(date):new Date(o);
+    if(time)d.setHours(time.h,time.mi,0,0); else d.setHours(o.getHours(),o.getMinutes(),0,0);
+    m.at=d.toISOString(); touch(c);
+    pushUndo('הזזת הפגישה עם '+c.name,()=>{m.at=old});
+    return c.name+' · הוזזה מ־'+whenLabel(old)+' ל־'+whenLabel(m.at)+'.';
+  }
+
+  /* ביטול */
+  if(/תבטל|לבטל|ביטול/.test(t)){
+    const hits=matchClients(name);
+    if(!hits.length)return 'את הפגישה של מי לבטל?';
+    if(hits.length>1)return ask(hits,'למי מהם?');
+    const c=hits[0];
+    const m=S.meetings.filter(m=>m.clientId===c.id&&m.status==='open').sort((a,b)=>new Date(a.at)-new Date(b.at))[0];
+    if(!m)return 'אין פגישה פתוחה עם '+c.name+'.';
+    m.status='cancelled'; m.closedAt=now().toISOString();
+    pushUndo('ביטול הפגישה עם '+c.name,()=>{m.status='open';delete m.closedAt});
+    return 'הפגישה עם '+c.name+' ('+whenLabel(m.at)+') בוטלה.';
+  }
+
+  /* הצעת מחיר */
+  if(/הצע(ת|ה)\s*מחיר|הצעה/.test(t)){
+    const c=getClient(name);
+    if(!name)return 'למי שלחת את ההצעה?';
+    if(c.ambiguous)return ask(c.ambiguous,'למי מהם?');
+    let amount=null;
+    const am=t.match(/(\d[\d,]*)\s*(אלף|k)?\s*(?:₪|שח|שקל|שקלים)?/g);
+    const num=t.match(/(?:על|בסך|בשווי)?\s*(\d[\d,]{2,})/);
+    if(num)amount=+num[1].replace(/,/g,'');
+    const small=t.match(/(?:על|בסך)\s*(\d{1,3})\s*אלף/);
+    if(small)amount=+small[1]*1000;
+    const q={id:uid(),clientId:c.id,amount,sentAt:(date||now()).toISOString(),status:'open'};
+    S.quotes.push(q); touch(c);
+    pushUndo('הצעת מחיר ל'+c.name,()=>{S.quotes=S.quotes.filter(x=>x.id!==q.id)});
+    return 'הצעת מחיר ל'+c.name+(amount?' על '+amount.toLocaleString()+' ₪':'')+' — נרשמה.\nאזכיר בעוד שבוע אם לא יהיה מענה.';
+  }
+
+  /* פגישה */
+  if(/פגישה|לקבוע|תקבע|נפגש|פגוש/.test(t)){
+    if(!name)return 'עם מי הפגישה?';
+    const c=getClient(name);
+    if(c.ambiguous)return ask(c.ambiguous,'עם מי מהם?');
+    if(!date&&!time)return 'מתי הפגישה עם '+c.name+'?';
+    const d=date?new Date(date):day0(now());
+    if(time)d.setHours(time.h,time.mi,0,0); else d.setHours(10,0,0,0);
+    if(d<now()&&!date)d.setDate(d.getDate()+1);
+    const dur=(t.match(/(\d+)\s*(?:דקות|דק)/)||[])[1];
+    const m={id:uid(),clientId:c.id,at:d.toISOString(),status:'open',dur:dur?+dur:60};
+    S.meetings.push(m); touch(c);
+    pushUndo('הפגישה עם '+c.name,()=>{S.meetings=S.meetings.filter(x=>x.id!==m.id)});
+    return c.name+' · '+whenLabel(m.at)+' — נרשמה.';
+  }
+
+  /* משימה */
+  let c=null;
+  if(name){const g=getClient(name); if(g.ambiguous)return ask(g.ambiguous,'לאיזה לקוח לשייך?'); c=g}
+  let title=t.replace(/^(תרשום לי|תרשום|תזכיר לי|תזכיר|משימה|צריך|אני צריך|שים לב|אל תשכח)\s*/,'').trim();
+  if(time)title=title.replace(time.raw,' ');
+  if(dt)title=title.replace(dt.raw,' ');
+  title=title.replace(/\s{2,}/g,' ').replace(/[.,]+$/,'').trim();
+  if(title.length<2)title='משימה';
+  const due=date?new Date(date):null; if(due&&time)due.setHours(time.h,time.mi,0,0);
+  const task={id:uid(),clientId:c?c.id:null,title,due:due?due.toISOString():null,status:'open'};
+  S.tasks.push(task); touch(c);
+  pushUndo('המשימה "'+title+'"',()=>{S.tasks=S.tasks.filter(x=>x.id!==task.id)});
+  return 'נרשם: '+title+(c?' · '+c.name:'')+(due?' · '+whenLabel(task.due):' · ללא תאריך');
+}
+
+/* שאלה כשלא בטוח — לא מנחשים */
+function ask(hits,q){
+  pending=(ans)=>{
+    const pick=hits.find(c=>norm(c.name).includes(norm(ans))||norm(ans).includes(norm(c.name).split(' ')[0]));
+    pending=null;
+    if(!pick)return null;
+    return 'הבנתי — '+pick.name+'. תכתוב לי שוב את הפעולה עם השם המלא.';
+  };
+  return q+'\n'+hits.map(c=>'· '+c.name).join('\n');
+}
+
+/* ═══ 5 · לוגיקת הכרטיסים היזומים ═══ */
+const QUOTE_DAYS=7, FORGOT_DAYS=21;
+const nextMeeting=()=>S.meetings.filter(m=>m.status==='open'&&new Date(m.at)>=now())
+  .sort((a,b)=>new Date(a.at)-new Date(b.at))[0];
+const openFor=id=>S.tasks.filter(t=>t.clientId===id&&t.status==='open').length
+  + S.quotes.filter(q=>q.clientId===id&&q.status==='open').length;
+const staleQuotes=()=>S.quotes.filter(q=>q.status==='open'&&dayDiff(new Date(q.sentAt),now())>=QUOTE_DAYS);
+const forgotten=()=>S.clients.filter(c=>!c.archived&&dayDiff(new Date(c.last),now())>=FORGOT_DAYS
+  &&!S.dismissed.includes(c.id));
+const hoursFor=id=>S.meetings.filter(m=>m.clientId===id&&m.status==='open'&&new Date(m.at)<now())
+  .reduce((a,m)=>a+(m.dur||60),0)/60;
+
+/* ═══ תצוגה ═══ */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const initials=n=>{const p=String(n).trim().split(/\s+/);return (p[0][0]||'?')+(p[1]?p[1][0]:'')};
+
+function renderToday(){
+  const el=$('todayCard'), m=nextMeeting();
+  const clock='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0C447C" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>';
+  if(!m){el.className='today empty';el.innerHTML=clock+'<div style="flex:1"><div class="main">אין פגישות קרובות</div></div>';return}
+  const c=clientOf(m.clientId), d=new Date(m.at), mins=Math.round((d-now())/6e4), n=dayDiff(now(),d);
+  const when=mins<90&&mins>0?'בעוד '+mins+' דקות':(n===0?'היום':(n===1?'מחר':dm(d)));
+  const op=openFor(m.clientId);
+  const note=[c&&c.note?c.note:null,op?op+' פתוחים':null].filter(Boolean).join(' · ');
+  el.className='today';
+  el.innerHTML=clock+'<div style="flex:1"><div class="label">'+(n===0&&mins<90?'היום · ':'')+esc(when)+'</div>'+
+    '<div class="main">'+hhmm(d)+' · '+esc(c?c.name:'')+'</div>'+
+    (note?'<div class="note">'+esc(note)+'</div>':'')+'</div>';
+}
+
+function renderChat(){
+  let h='<div class="daysep">היום</div>';
+  staleQuotes().forEach(q=>{const c=clientOf(q.clientId); if(!c)return;
+    h+='<div class="card warn"><div class="h">הצעת מחיר · '+esc(c.name)+'</div>'+
+      '<div class="s">'+(q.amount?q.amount.toLocaleString()+' ₪ · ':'')+'נשלחה '+agoLabel(q.sentAt)+' · אין מענה</div>'+
+      '<div class="btns"><button class="btn w" data-act="wa" data-id="'+c.id+'">חזור אליו</button>'+
+      '<button class="btn w" data-act="qlost" data-id="'+q.id+'">סגור</button></div></div><div class="time">09:00</div>';});
+  forgotten().forEach(c=>{
+    h+='<div class="card danger"><div class="h">לא נגעת ב'+esc(c.name)+' '+agoLabel(c.last).replace('לפני ','')+'</div>'+
+      '<div class="s">פעילות אחרונה: '+dm(new Date(c.last))+'</div>'+
+      '<div class="btns"><button class="btn d" data-act="wa" data-id="'+c.id+'">הודעה</button>'+
+      '<button class="btn d" data-act="farch" data-id="'+c.id+'">לארכיון</button></div></div><div class="time">09:02</div>';});
+  if(!S.msgs.length)h+='<div class="empty">כתוב לי מה צריך:<br>'+
+    '<b data-ex="תקבע פגישה עם אבי גורי ביום חמישי בשעה חמש וחצי">תקבע פגישה עם אבי גורי ביום חמישי בשעה חמש וחצי</b><br>'+
+    '<b data-ex="תזכיר לי לשלוח חוזה לליז כהן מחר">תזכיר לי לשלוח חוזה לליז כהן מחר</b><br>'+
+    '<b data-ex="שלחתי הצעת מחיר לרועי כהן על 12000">שלחתי הצעת מחיר לרועי כהן על 12000</b><br>'+
+    '<b data-ex="מה יש לי היום">מה יש לי היום</b></div>';
+  S.msgs.forEach((m,i)=>{
+    const showUndo=m.who==='bot'&&i===S.msgs.length-1&&undoStack.length;
+    h+='<div class="bubble '+(m.who==='me'?'me':'bot')+'"><p>'+esc(m.text)+'</p>'+
+      (showUndo?'<div class="btns"><button class="btn" data-act="undo">לא נכון, בטל</button></div>':'')+'</div>'+
+      '<div class="time'+(m.who==='me'?' left':'')+'">'+m.t+(m.who==='me'?' ✓✓':'')+'</div>';});
+  const s=$('scroll'); s.innerHTML=h; s.scrollTop=s.scrollHeight;
+}
+
+/* ═══ 3 · לקוחות ═══ */
+function urgency(c){
+  if(c.archived)return 5;
+  if(dayDiff(new Date(c.last),now())>=FORGOT_DAYS)return 0;
+  if(S.quotes.some(q=>q.clientId===c.id&&q.status==='open'&&dayDiff(new Date(q.sentAt),now())>=3))return 1;
+  if(S.tasks.some(t=>t.clientId===c.id&&t.status==='open'&&t.due&&dayDiff(now(),new Date(t.due))<0))return 2;
+  if(openFor(c.id)||S.meetings.some(m=>m.clientId===c.id&&m.status==='open'&&new Date(m.at)>=now()))return 3;
+  return 4;
+}
+function clientRow(c,calm){
+  const u=urgency(c);
+  const q=S.quotes.find(q=>q.clientId===c.id&&q.status==='open');
+  const m=S.meetings.filter(m=>m.clientId===c.id&&m.status==='open'&&new Date(m.at)>=now())
+    .sort((a,b)=>new Date(a.at)-new Date(b.at))[0];
+  let sub='',cls='',av='av-gray';
+  if(u===0){sub='אין מגע '+agoLabel(c.last).replace('לפני ','');cls='danger';av='av-red'}
+  else if(u===1){sub='הצעת מחיר ממתינה · '+dayDiff(new Date(q.sentAt),now())+' ימים';cls='warn';av='av-amber'}
+  else if(u===2){sub='משימה באיחור';cls='danger';av='av-red'}
+  else if(m){sub='פגישה '+whenLabel(m.at);av='av-blue'}
+  else if(c.archived)sub='ארכיון';
+  else{const h=hoursFor(c.id);sub=openFor(c.id)?openFor(c.id)+' פתוחים':(h?'הכל סגור · '+h.toFixed(1)+' שעות':'הכל סגור')}
+  const n=openFor(c.id);
+  return '<div class="row tap'+(calm?' muted':'')+'" data-act="client" data-id="'+c.id+'">'+
+    (n&&!calm?'<span class="badge">'+n+'</span>':'')+
+    '<div class="grow"><div class="name">'+esc(c.name)+'</div><div class="sub '+cls+'">'+esc(sub)+'</div></div>'+
+    '<div class="avatar '+av+'">'+esc(initials(c.name))+'</div></div>';
+}
+function renderClients(){
+  if(!S.clients.length){$('scroll').innerHTML='<div class="empty">אין עדיין לקוחות.<br>כל פגישה או משימה שתרשום תיצור אחד.</div>';return}
+  const act=S.clients.filter(c=>urgency(c)<4).sort((a,b)=>urgency(a)-urgency(b));
+  const calm=S.clients.filter(c=>urgency(c)>=4);
+  let h='';
+  if(act.length)h+='<div class="sec">דורש טיפול</div>'+act.map(c=>clientRow(c)).join('');
+  if(calm.length)h+='<div class="sec">רגוע</div>'+calm.map(c=>clientRow(c,true)).join('');
+  $('scroll').innerHTML=h;
+}
+
+/* ═══ 4 · משימות ═══ */
+function taskRow(t,cls){
+  const c=t.clientId?clientOf(t.clientId):null, d=t.status==='done';
+  return '<div class="row'+(d?' muted':'')+'">'+
+    '<button class="chk'+(d?' on':'')+'" data-act="toggle" data-id="'+t.id+'" aria-label="סמן כבוצע">'+
+    (d?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2F7D46" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>':'')+'</button>'+
+    '<div class="grow"><div class="name'+(d?' strike':'')+'"'+(cls==='danger'&&!d?' style="color:var(--red-ink)"':'')+'>'+esc(t.title)+'</div>'+
+    '<div class="sub '+(cls||'')+'">'+(c?esc(c.name):'ללא לקוח')+(t.due?' · '+whenLabel(t.due):'')+'</div></div></div>';
+}
+function renderTasks(){
+  if(!S.tasks.length){$('scroll').innerHTML='<div class="empty">אין משימות.<br><b data-ex="תזכיר לי לשלוח חוזה לליז כהן מחר">תזכיר לי לשלוח חוזה לליז כהן מחר</b></div>';return}
+  const g={late:[],today:[],week:[],none:[]};
+  S.tasks.filter(t=>t.status==='open').forEach(t=>{
+    if(!t.due)return g.none.push(t);
+    const d=dayDiff(now(),new Date(t.due));
+    if(d<0)g.late.push(t); else if(d===0)g.today.push(t); else if(d<=7)g.week.push(t); else g.none.push(t)});
+  const blk=(l,a,c)=>a.length?'<div class="sec">'+l+'</div>'+a.map(t=>taskRow(t,c)).join(''):'';
+  const done=S.tasks.filter(t=>t.status==='done').slice(-5).reverse();
+  $('scroll').innerHTML=blk('באיחור',g.late,'danger')+blk('היום',g.today)+blk('השבוע',g.week)+
+    blk('ללא תאריך',g.none)+(done.length?'<div class="sec">נסגר</div>'+done.map(t=>taskRow(t)).join(''):'');
+}
+
+/* ═══ גיליונות ═══ */
+const openSheet=h=>{$('sheetInner').innerHTML=h;$('sheet').style.display='flex'};
+const closeSheet=()=>{$('sheet').style.display='none'};
+
+function sheetClient(id){
+  const c=clientOf(id); if(!c)return;
+  const ms=S.meetings.filter(m=>m.clientId===id).sort((a,b)=>new Date(b.at)-new Date(a.at));
+  const ts=S.tasks.filter(t=>t.clientId===id);
+  const qs=S.quotes.filter(q=>q.clientId===id&&q.status==='open');
+  let h='<h3>'+esc(c.name)+'</h3><div class="meta">מגע אחרון '+agoLabel(c.last)+(c.note?' · '+esc(c.note):'')+'</div>'+
+    '<div class="stat"><div><div class="n">'+hoursFor(id).toFixed(1)+'</div><div class="l">שעות</div></div>'+
+    '<div><div class="n">'+openFor(id)+'</div><div class="l">פתוחים</div></div>'+
+    '<div><div class="n">'+ms.filter(m=>m.status!=='cancelled').length+'</div><div class="l">פגישות</div></div></div>';
+  qs.forEach(q=>{h+='<div class="card warn" style="max-width:none"><div class="h">'+
+    (q.amount?q.amount.toLocaleString()+' ₪':'הצעת מחיר')+' · ממתינה</div>'+
+    '<div class="s">נשלחה '+dm(new Date(q.sentAt))+' · '+dayDiff(new Date(q.sentAt),now())+' ימים</div>'+
+    '<div class="btns"><button class="btn w" data-act="qwon" data-id="'+q.id+'">נסגרה בהצלחה</button>'+
+    '<button class="btn w" data-act="qlost" data-id="'+q.id+'">לא יצא</button></div></div>'});
+  if(ms.length)h+='<div class="sec">פגישות</div>'+ms.slice(0,6).map(m=>'<div class="row"><div class="grow">'+
+    '<div class="name">'+whenLabel(m.at)+'</div><div class="sub">'+
+    (m.status==='cancelled'?'בוטלה':(new Date(m.at)<now()?'התקיימה · '+(m.dur||60)+' דקות':'מתוכננת'))+
+    '</div></div></div>').join('');
+  if(ts.length)h+='<div class="sec">משימות</div>'+ts.map(t=>taskRow(t)).join('');
+  h+='<div class="btns" style="margin-top:16px"><button class="btn g" data-act="wa" data-id="'+c.id+'">הודעה בוואטסאפ</button>'+
+     '<button class="btn" data-act="close">סגור</button></div>';
+  openSheet(h);
+}
+
+/* ═══ 7 · הודעה ללקוח ═══ */
+function drafts(c){
+  const q=S.quotes.find(q=>q.clientId===c.id&&q.status==='open');
+  const f=c.name.split(' ')[0];
+  if(q)return[
+    'היי '+f+',\nרציתי לחזור אליך לגבי ההצעה ששלחתי ב־'+dm(new Date(q.sentAt))+'.\nיש שאלות פתוחות שאפשר לעבור עליהן? אשמח לדבר השבוע.',
+    'היי '+f+', מה קורה עם ההצעה? יש התקדמות?',
+    'היי '+f+',\nלא רוצה להעיק — רק לוודא שההצעה הגיעה ושאין משהו שחסר לך כדי להחליט.'];
+  return[
+    'היי '+f+',\nמזמן לא דיברנו. יש משהו שאפשר לקדם?',
+    'היי '+f+', חשבתי עליך — יש משהו פתוח שכדאי לסגור?',
+    'היי '+f+',\nרק בודק מה שלומך ואם יש משהו שאפשר לעזור בו.'];
+}
+function sheetWhatsapp(id){
+  const c=clientOf(id); if(!c)return;
+  const d=drafts(c); window._d=d; window._pick=0;
+  let h='<h3>הודעה ל'+esc(c.name)+'</h3><div class="meta">הבוט ניסח. אתה שולח מהמספר שלך.</div>'+
+    '<div class="draft" id="draftBox">'+esc(d[0]).replace(/\n/g,'<br>')+'</div>'+
+    '<div class="btns"><button class="btn g" data-act="wasend" data-id="'+c.id+'">פתח בוואטסאפ</button></div>'+
+    '<div class="sec">ניסוחים אחרים</div>';
+  d.slice(1).forEach((x,i)=>{h+='<div class="row tap" data-act="wapick" data-i="'+(i+1)+'">'+
+    '<div class="grow"><div style="font-size:13px;line-height:1.6">'+esc(x).replace(/\n/g,'<br>')+'</div></div></div>'});
+  h+='<div class="sec">אחרי השליחה</div><div style="font-size:13px;color:var(--text-2);line-height:1.6">'+
+    'אסמן שחזרת אליו היום, ואזכיר שוב בעוד '+QUOTE_DAYS+' ימים אם לא תהיה תשובה.</div>'+
+    '<div class="btns" style="margin-top:14px"><button class="btn" data-act="close">סגור</button></div>';
+  openSheet(h);
+}
+
+/* ═══ 6 · סיכום חודשי ═══ */
+function sheetReport(){
+  const rows=S.clients.map(c=>({c,h:hoursFor(c.id)})).filter(r=>r.h>0).sort((a,b)=>b.h-a.h);
+  const total=rows.reduce((a,r)=>a+r.h,0), max=rows.length?rows[0].h:1;
+  const dropped=S.tasks.filter(t=>t.status==='open'&&t.due&&dayDiff(now(),new Date(t.due))<-7).length;
+  const sq=staleQuotes(), sum=sq.reduce((a,q)=>a+(q.amount||0),0);
+  const won=S.quotes.filter(q=>q.status==='won');
+  let h='<h3>סיכום החודש</h3><div class="meta">'+MONTHS[now().getMonth()]+' '+now().getFullYear()+'</div>'+
+    '<div class="stat"><div><div class="n">'+total.toFixed(1)+'</div><div class="l">שעות</div></div>'+
+    '<div><div class="n">'+dropped+'</div><div class="l">משימות נפלו</div></div>'+
+    '<div><div class="n">'+sq.length+'</div><div class="l">הצעות תקועות</div></div></div>';
+  if(sq.length)h+='<div class="card danger" style="max-width:none"><div class="h">'+sq.length+' הצעות בלי מענה</div>'+
+    '<div class="s">'+(sum?'שווי כולל '+sum.toLocaleString()+' ₪ · ':'')+
+    sq.map(q=>clientOf(q.clientId).name).join(', ')+'</div></div>';
+  if(won.length)h+='<div class="card" style="max-width:none;background:var(--green-bg);margin-top:8px">'+
+    '<div class="h" style="color:var(--green)">'+won.length+' הצעות נסגרו</div>'+
+    '<div class="s" style="color:var(--green)">'+won.reduce((a,q)=>a+(q.amount||0),0).toLocaleString()+' ₪</div></div>';
+  if(rows.length){h+='<div class="sec">שעות לפי לקוח</div>';
+    rows.forEach(r=>{h+='<div style="padding:9px 0"><div style="display:flex;justify-content:space-between;font-size:13px">'+
+      '<span>'+esc(r.c.name)+'</span><span style="color:var(--text-2)">'+r.h.toFixed(1)+'</span></div>'+
+      '<div class="bar"><i style="width:'+Math.round(r.h/max*100)+'%"></i></div></div>'})}
+  else h+='<div class="empty">אין עדיין שעות.<br>שעות נספרות מפגישות שכבר עברו.</div>';
+  h+='<div class="btns" style="margin-top:16px"><button class="btn" data-act="copyreport">העתק לחיוב</button>'+
+     '<button class="btn" data-act="close">סגור</button></div>';
+  openSheet(h);
+}
+
+/* ═══ תפריט ═══ */
+function sheetMenu(){
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  const standalone=window.matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+  let h='<h3>תפריט</h3><div class="meta">גרסה 1.0 · הנתונים נשמרים במכשיר שלך</div>';
+  if(!standalone)h+='<div class="hint"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0C447C" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:1px"><path d="M12 16V4M8 8l4-4 4 4M4 20h16"/></svg>'+
+    '<span>להוסיף למסך הבית: '+(ios?'כפתור השיתוף בסאפרי ← "הוסף למסך הבית"':'תפריט הדפדפן ← "הוסף למסך הבית"')+'</span></div>';
+  h+='<div class="row tap" data-act="report"><div class="grow"><div class="name">סיכום החודש</div>'+
+    '<div class="sub">שעות, מה נפל, הצעות תקועות</div></div></div>'+
+    '<div class="row tap" data-act="demo"><div class="grow"><div class="name">טען נתוני דמו</div>'+
+    '<div class="sub">5 לקוחות במצבים שונים</div></div></div>'+
+    '<div class="row tap" data-act="export"><div class="grow"><div class="name">ייצוא נתונים</div>'+
+    '<div class="sub">קובץ גיבוי</div></div></div>'+
+    '<div class="row tap" data-act="wipe"><div class="grow"><div class="name" style="color:var(--red-ink)">מחק הכל</div>'+
+    '<div class="sub">מתחיל מדף ריק</div></div></div>'+
+    '<div class="btns" style="margin-top:16px"><button class="btn" data-act="close">סגור</button></div>';
+  openSheet(h);
+}
+
+/* ═══ ניווט ═══ */
+const NAV=[
+  {k:'tasks',label:'משימות',icon:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12l3 3 5-6"/>'},
+  {k:'clients',label:'לקוחות',icon:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16.5 5.5a3.5 3.5 0 0 1 0 5"/><path d="M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/>'},
+  {k:'chat',label:"צ'אט",icon:'<path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9 9 0 0 1-3.3-.6L3 21l1.7-5a8.4 8.4 0 0 1-.7-3.5 8.4 8.4 0 0 1 8.5-8.4 8.4 8.4 0 0 1 8.5 8.4z"/>'}
+];
+function render(){
+  $('screenTitle').textContent=view==='chat'?'העוזר העסקי':(view==='clients'?'לקוחות':'משימות');
+  $('nav').innerHTML=NAV.map(n=>'<button data-view="'+n.k+'" class="'+(view===n.k?'active':'')+'">'+
+    '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+n.icon+'</svg>'+n.label+'</button>').join('');
+  renderToday();
+  if(view==='chat')renderChat(); else if(view==='clients')renderClients(); else renderTasks();
+  save();
+}
+
+/* ═══ אירועים ═══ */
+function sendMsg(){
+  const v=$('input').value.trim(); if(!v)return;
+  S.msgs.push({who:'me',text:v,t:hhmm(now())});
+  S.msgs.push({who:'bot',text:respond(v),t:hhmm(now())});
+  $('input').value=''; view='chat'; render();
+}
+$('send').onclick=sendMsg;
+$('input').onkeydown=e=>{if(e.key==='Enter')sendMsg()};
+$('menu').onclick=sheetMenu;
+$('nav').onclick=e=>{const b=e.target.closest('button[data-view]');if(b){view=b.dataset.view;render()}};
+$('sheet').onclick=e=>{if(e.target.id==='sheet')closeSheet()};
+
+document.body.addEventListener('click',e=>{
+  const ex=e.target.closest('[data-ex]');
+  if(ex){$('input').value=ex.dataset.ex;$('input').focus();return}
+  const el=e.target.closest('[data-act]'); if(!el)return;
+  const id=el.dataset.id, act=el.dataset.act;
+
+  if(act==='client'){sheetClient(id);return}
+  if(act==='wa'){closeSheet();sheetWhatsapp(id);return}
+  if(act==='report'){sheetReport();return}
+  if(act==='close'){closeSheet();return}
+  if(act==='wapick'){window._pick=+el.dataset.i;
+    $('draftBox').innerHTML=esc(window._d[window._pick]).replace(/\n/g,'<br>');return}
+  if(act==='wasend'){const c=clientOf(id); touch(c);
+    const q=S.quotes.find(q=>q.clientId===id&&q.status==='open'); if(q)q.sentAt=now().toISOString();
+    S.dismissed=S.dismissed.filter(x=>x!==id);
+    window.open('https://wa.me/?text='+encodeURIComponent(window._d[window._pick||0]),'_blank');
+    closeSheet(); render(); return}
+  if(act==='copyreport'){
+    const txt=S.clients.map(c=>({n:c.name,h:hoursFor(c.id)})).filter(r=>r.h>0)
+      .map(r=>r.n+' — '+r.h.toFixed(1)+' שעות').join('\n');
+    try{navigator.clipboard.writeText(txt)}catch(e){}
+    el.textContent='הועתק'; return}
+  if(act==='export'){
+    const b=new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(b);
+    a.download='ozer-backup.json'; a.click(); return}
+
+  switch(act){
+    case 'undo':S.msgs.push({who:'bot',text:undoLast(),t:hhmm(now())});break;
+    case 'toggle':{const t=S.tasks.find(t=>t.id===id);t.status=t.status==='done'?'open':'done';
+      if(t.status==='done')t.closedAt=now().toISOString();break}
+    case 'qlost':{const q=S.quotes.find(q=>q.id===id);q.status='lost';q.closedAt=now().toISOString();break}
+    case 'qwon':{const q=S.quotes.find(q=>q.id===id);q.status='won';q.closedAt=now().toISOString();break}
+    case 'farch':{clientOf(id).archived=true;S.dismissed.push(id);break}
+    case 'demo':seed(true);break;
+    case 'wipe':if(confirm('למחוק הכל?')){S={clients:[],meetings:[],tasks:[],quotes:[],msgs:[],seeded:true,dismissed:[]};undoStack=[]}break;
+  }
+  closeSheet(); render();
+});
+
+/* ═══ 1 · נתוני דמו — 5 לקוחות במצבים שונים ═══ */
+function seed(force){
+  if(S.seeded&&!force)return;
+  const t=now(), ago=n=>{const d=new Date(t);d.setDate(d.getDate()-n);return d.toISOString()};
+  const C=(name,note,d)=>({id:uid(),name,note:note||'',last:ago(d),archived:false});
+  const avi=C('אבי גרינליף','אתר תדמית',0),      // פגישה היום + פתוחים
+        roi=C('רועי כהן','',9),                   // הצעת מחיר תקועה
+        mic=C('מיכל ברק','',24),                  // נשכח
+        liz=C('ליז כהן','ליווי חודשי',1),         // פגישה מחר
+        dan=C('דני לוי','',2);                    // רגוע
+  S.clients=[avi,roi,mic,liz,dan];
+
+  const at=(days,h,mi)=>{const d=new Date(t);d.setDate(d.getDate()+days);d.setHours(h,mi||0,0,0);return d.toISOString()};
+  const soon=new Date(t); soon.setMinutes(soon.getMinutes()+40,0,0);
+  S.meetings=[
+    {id:uid(),clientId:avi.id,at:soon.toISOString(),status:'open',dur:60},
+    {id:uid(),clientId:liz.id,at:at(1,14),status:'open',dur:60},
+    {id:uid(),clientId:dan.id,at:at(-3,14),status:'open',dur:90},
+    {id:uid(),clientId:roi.id,at:at(-9,10),status:'open',dur:90},
+    {id:uid(),clientId:avi.id,at:at(-6,11),status:'open',dur:120}
+  ];
+  S.tasks=[
+    {id:uid(),clientId:avi.id,title:'בדיקת שרת',due:at(-1,12),status:'open'},
+    {id:uid(),clientId:avi.id,title:'להכין מסמך דרישות',due:at(0,10),status:'open'},
+    {id:uid(),clientId:liz.id,title:'לשלוח חוזה',due:at(4,12),status:'open'},
+    {id:uid(),clientId:mic.id,title:'לתאם שיחת המשך',due:null,status:'open'},
+    {id:uid(),clientId:dan.id,title:'שליחת הצעת מחיר',due:at(0,9),status:'done',closedAt:t.toISOString()}
+  ];
+  S.quotes=[
+    {id:uid(),clientId:roi.id,amount:12000,sentAt:at(-8,10),status:'open'},
+    {id:uid(),clientId:dan.id,amount:8500,sentAt:at(-20,10),status:'won',closedAt:at(-14,10)}
+  ];
+  S.msgs=[]; S.dismissed=[]; undoStack=[]; S.seeded=true;
+}
+
+load(); seed(); render();
+</script>
+</body>
+</html>
